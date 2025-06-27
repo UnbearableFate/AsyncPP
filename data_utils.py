@@ -79,7 +79,7 @@ class TextDataset(IterableDataset):
 class WikiTextDataset(TextDataset):
     def __init__(self, root, tokenizer, train=True, block_size=256):
         split = 'train' if train else 'validation'
-        dataset = load_dataset('wikitext', 'wikitext-103-v1')[split]
+        dataset = load_dataset('wikitext', 'wikitext-103-raw-v1')[split]
         super(WikiTextDataset, self).__init__(dataset, tokenizer, block_size)
 
 # Define an TextDataset

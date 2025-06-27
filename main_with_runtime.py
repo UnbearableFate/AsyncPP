@@ -5,6 +5,10 @@ import argparse
 import importlib
 import json
 import os
+os.environ["HF_DATASETS_CACHE"] = "/work/NBB/share/datasets"
+#os.environ["TRANSFORMERS_CACHE"] = "/work/NBB/share/pre-trained-models"
+os.environ["HF_DATASETS_OFFLINE"] = "1"  # 如果你是在计算节点上运行
+os.environ['HF_HUB_OFFLINE'] = "1"  # 如果你是在计算节点上运行
 import sys
 import time
 import random
@@ -81,7 +85,8 @@ parser.add_argument('--config_path', default=None, type=str,
                     help="Path of configuration file")
 parser.add_argument('--no_input_pipelining', action='store_true',
                     help="No pipelining of inputs")
-parser.add_argument('--rank', default=None, type=int,
+mpi_rank = os.environ.get('OMPI_COMM_WORLD_RANK', None)
+parser.add_argument('--rank', default=mpi_rank, type=int,
                     help="Rank of worker")
 parser.add_argument('--local_rank', default=0, type=int,
                     help="Local rank of worker")
