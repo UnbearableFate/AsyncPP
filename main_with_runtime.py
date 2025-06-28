@@ -32,6 +32,8 @@ from runtime import runtime
 from optim import adamw
 from optim import nadamw
 
+from kfac.simple_kfac.simple_kfacprec import SimpleKFACPreconditioner
+
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('--data_dir', '-dd', type=str, default='~/data',
                     help='path to dataset')
@@ -357,6 +359,8 @@ def main():
     else:
         raise Exception("Invalid optimizer")
 
+    preconditioner = SimpleKFACPreconditioner(model=r.modules(),inv_update_steps=50)
+
     if args.resume:
         optimizer.load_state_dict(checkpoint['optimizer'])
 
@@ -432,7 +436,7 @@ def main():
         _tb.close()
 
 
-def train(train_loader, r, optimizer, epoch, du):
+def train(train_loader, r, optimizer, epoch, du, preconditioner=None):
     batch_time = AverageMeter()
     losses = AverageMeter()
     # switch to train mode
@@ -511,6 +515,8 @@ def train(train_loader, r, optimizer, epoch, du):
         r.run_backward()
         # load weights for optimizer step
         optimizer.load_new_params()
+        if preconditioner is not None:
+            preconditioner.step()
         optimizer.step()
 
     # finish remaining backward passes
@@ -521,6 +527,8 @@ def train(train_loader, r, optimizer, epoch, du):
         r.run_backward()
         # load weights for optimizer step
         optimizer.load_new_params()
+        if preconditioner is not None:
+            preconditioner.step()
         optimizer.step()
 
     # wait for all helper threads to complete
