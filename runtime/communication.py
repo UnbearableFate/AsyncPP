@@ -37,8 +37,8 @@ class CommunicationHandler(object):
         assert num_ranks_in_server > 0
 
         # Initialize the distributed environment.
-        os.environ['MASTER_ADDR'] = master_addr
-        os.environ['MASTER_PORT'] = str(master_port)
+        #os.environ['MASTER_ADDR'] = master_addr
+        #os.environ['MASTER_PORT'] = str(master_port)
         dist.init_process_group(backend, rank=rank, world_size=world_size)
         assert dist.get_world_size() == self.world_size
         print("Finished initializing process group; backend: %s, rank: %d, "
